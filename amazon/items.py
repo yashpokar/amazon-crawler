@@ -1,14 +1,14 @@
-# -*- coding: utf-8 -*-
-
-# Define here the models for your scraped items
-#
-# See documentation in:
-# https://doc.scrapy.org/en/latest/topics/items.html
-
 import scrapy
 
 
-class AmazonItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class ListingItem(scrapy.Item):
+    asin = scrapy.Field()
+    name = scrapy.Field()
+    pdp_url = scrapy.Field()
+    current_url = scrapy.Field()
+    img_url = scrapy.Field()
+    promotion = scrapy.Field()
+    price = scrapy.Field()
+    ratings = scrapy.Field()
+    is_prime = scrapy.Field()
+    reviews = scrapy.Field()

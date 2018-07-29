@@ -9,7 +9,7 @@ class ListingItem(Item):
     asin = scrapy.Field()
     name = scrapy.Field()
     pdp_url = scrapy.Field()
-    img_url = scrapy.Field()
+    image = scrapy.Field()
     promotion = scrapy.Field()
     price = scrapy.Field()
     ratings = scrapy.Field()

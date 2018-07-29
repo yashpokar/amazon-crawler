@@ -8,7 +8,12 @@ from amazon.items import ListingItem
 
 class ListingSpider(scrapy.Spider):
 	name = 'listing'
-
+	allowed_domains = ['www.amazon.com']
+	custom_settings = {
+		'ITEM_PIPELINES': {
+			'amazon.pipelines.ListingPipeline': 1,
+		}
+	}
 	start_urls = ['https://www.amazon.com/s/ref=lp_1045024_ex_n_4?rh=n%3A7141123011%2Cn%3A7147440011%2Cn\
 	%3A1040660%2Cn%3A1045024%2Cn%3A2346727011&bbn=1045024&ie=UTF8&qid=1532894010']
 
@@ -42,7 +47,7 @@ class ListingSpider(scrapy.Spider):
 				il.add_xpath('asin', './@data-asin')
 				il.add_xpath('name', './/a[@title]/@title')
 				il.add_xpath('pdp_url', './/a[@href][@title]/@href')
-				il.add_xpath('img_url', './/img[@src]/@src')
+				il.add_xpath('image', './/img[@src]/@src')
 				il.add_xpath('promotion', './/*[contains(@id,"BESTSELLER")]/@id | .//*[starts-with(name(),"h")][contains(@class,"sponsored")]/text()')
 				il.add_xpath('price', './/span[@class= "a-offscreen"]/text()')
 				il.add_xpath('ratings', './/span[@class = "a-icon-alt"]/text() | .//i[contains(@class,"a-icon-star-small")][not(contains(@class,"prime"))]/@class')
@@ -51,4 +56,4 @@ class ListingSpider(scrapy.Spider):
 
 				yield il.load_item()
 		except Exception as e:
-			print e
+			self.logger.error(e)

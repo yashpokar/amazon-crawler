@@ -4,6 +4,13 @@ import scrapy
 class CategoriesSpider(scrapy.Spider):
     name = 'categories'
     allowed_domains = ['www.amazon.com']
+
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'amazon.pipelines.CategoriesPipeline': 1,
+        }
+    }
+
     start_urls = ['https://www.amazon.com/gp/site-directory/ref=nav_shopall_btn/']
 
     def parse(self, response):

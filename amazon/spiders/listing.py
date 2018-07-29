@@ -31,10 +31,9 @@ class ListingSpider(scrapy.Spider):
 							.replace('/gp/', base_url)
 						yield response.follow(next_page, meta={ 'is_pagination_done': True })
 			else:
-				with open('response.json', 'wb') as f:
-					data = '[%s]' % str(response.body).replace('&&&', ',').strip(',')
-					data = [item for item in json.loads(data) if item.has_key('centerBelowPlus')][0]['centerBelowPlus']['data']['value']
-					products = Selector(text=data)
+				data = '[%s]' % str(response.body).replace('&&&', ',').strip(',')
+				data = [item for item in json.loads(data) if item.has_key('centerBelowPlus')][0]['centerBelowPlus']['data']['value']
+				products = Selector(text=data)
 
 			for product in products.xpath('//*[contains(@id, "result_")]'):
 				il = ListingItemLoader(ListingItem(), product)

@@ -2,3 +2,5 @@
 
 venv/
 
+*.csv
+*.json

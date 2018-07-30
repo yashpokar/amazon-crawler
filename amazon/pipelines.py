@@ -7,16 +7,12 @@ class PostgresPipeline(object):
 		self.session = sessionmaker(bind=engine)()
 
 	def close_spider(self, spider):
-		self.session.commit()
 		self.session.close()
 
 	def process_item(self, item, spider):
-		try:
-			model = self._process_item(item)
-			self.session.add(model)
-			self.session.commit()
-		except:
-			self.session.rollback()
+		model = self._process_item(item)
+		self.session.add(model)
+		self.session.commit()
 
 		return item
 
@@ -24,7 +20,9 @@ class PostgresPipeline(object):
 class CategoriesPipeline(PostgresPipeline):
 	def _process_item(self, item):
 		category = Category(name=item['name'], image=item['image'])
-		category.urls = map(lambda name, url: CategoryUrl(name=name, url=url), item['urls'].items())
+
+		for url in item['urls']:
+			category.urls.append(CategoryUrl(name=url['name'], url=url['url']))
 
 		return category
 

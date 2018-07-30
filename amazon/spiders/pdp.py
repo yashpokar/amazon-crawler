@@ -4,7 +4,7 @@ import scrapy
 class PdpSpider(scrapy.Spider):
 	name = 'pdp'
 	allowed_domains = ['www.amazon.com']
-	start_urls = ['https://www.amazon.com/dp/B06XS25QHQ']
+	start_urls = ['https://www.amazon.com/FENSACE-Womens-Sleeveless-Summer-1703013/dp/B073R6R3XY/ref=lp_2346727011_1_5?s=apparel&ie=UTF8&qid=1532970616&sr=1-5&nodeID=2346727011&psd=1']
 
 	def parse(self, response):
 		try:

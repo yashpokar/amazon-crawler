@@ -3,7 +3,7 @@ from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateT
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-engine = create_engine('postgres://hjgwofilkinjtb:cd2b7aafe7c716908c7ff5bbd6714b8b907c0a7d53e1cee7b9dbf335677c90cf@ec2-50-17-234-234.compute-1.amazonaws.com:5432/dbv2d39ee10qti', echo=True)
+engine = create_engine('sqlite:///amazon.db', echo=True)
 Base = declarative_base()
 
 

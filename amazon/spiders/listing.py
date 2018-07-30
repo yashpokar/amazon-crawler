@@ -11,7 +11,7 @@ class ListingSpider(scrapy.Spider):
 	allowed_domains = ['www.amazon.com']
 	custom_settings = {
 		'ITEM_PIPELINES': {
-			'amazon.pipelines.ListingPipeline': 1,
+			# 'amazon.pipelines.ListingPipeline': 1,
 		}
 	}
 	start_urls = ['https://www.amazon.com/s/ref=lp_1045024_ex_n_4?rh=n%3A7141123011%2Cn%3A7147440011%2Cn\
@@ -49,7 +49,7 @@ class ListingSpider(scrapy.Spider):
 				il.add_xpath('pdp_url', './/a[@href][@title]/@href')
 				il.add_xpath('image', './/img[@src]/@src')
 				il.add_xpath('promotion', './/*[contains(@id,"BESTSELLER")]/@id | .//*[starts-with(name(),"h")][contains(@class,"sponsored")]/text()')
-				il.add_xpath('price', './/span[@class= "a-offscreen"]/text()')
+				il.add_xpath('price', './/span[@class= "a-offscreen"]/text() | .//span[@class="sx-price sx-price-large"]//text()')
 				il.add_xpath('ratings', './/span[@class = "a-icon-alt"]/text() | .//i[contains(@class,"a-icon-star-small")][not(contains(@class,"prime"))]/@class')
 				il.add_xpath('is_prime', './/i[contains(@class,"a-icon-prime")]/@class')
 				il.add_xpath('reviews', './/a[contains(@href,"customerReviews")]//text() | .//span[contains(@class,"review")]//text()')

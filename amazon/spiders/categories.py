@@ -26,8 +26,8 @@ class CategoriesSpider(scrapy.Spider):
 
             for _sub_category in _sub_categories:
                 items = {}
-                items['urls'] = _sub_category.xpath('./@href').extract_first()
-                items['sub_category_name'] = _sub_category.xpath('./text()').extract_first()
+                items['url'] = _sub_category.xpath('./@href').extract_first()
+                items['name'] = _sub_category.xpath('./text()').extract_first()
                 urls.append(items)
 
             yield {

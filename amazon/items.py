@@ -10,11 +10,14 @@ class ListingItem(Item):
     name = scrapy.Field()
     pdp_url = scrapy.Field()
     image = scrapy.Field()
+    images = scrapy.Field()
     promotion = scrapy.Field()
     price = scrapy.Field()
     ratings = scrapy.Field()
     is_prime = scrapy.Field()
     reviews = scrapy.Field()
+    brand_name = scrapy.Field()
+    brand_url = scrapy.Field()
 
 
 class Review(Item):

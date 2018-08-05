@@ -15,6 +15,9 @@ class ListingItemLoader(DefaultItemLoader):
 	price_in = filter_price_in
 	price_out = filter_price_out
 
+	images_in = MapCompose(lambda imgs: [img.split(' ')[0] for img in imgs.split(', ')])
+	images_out = MapCompose(unicode.strip)
+
 
 class ReviewItemLoader(DefaultItemLoader):
 	date_in = MapCompose(lambda x: x[3:] if len(x) >= 3 else x)

@@ -11,15 +11,23 @@ class ListingSpider(scrapy.Spider):
 	allowed_domains = ['www.amazon.com']
 	custom_settings = {
 		'ITEM_PIPELINES': {
-			# 'amazon.pipelines.ListingPipeline': 1,
+			'amazon.pipelines.ListingPipeline': 1,
 		}
 	}
-	start_urls = ['https://www.amazon.com/s/ref=lp_1045024_ex_n_4?rh=n%3A7141123011%2Cn%3A7147440011%2Cn\
-	%3A1040660%2Cn%3A1045024%2Cn%3A2346727011&bbn=1045024&ie=UTF8&qid=1532894010']
+
+	start_urls = [
+		'https://www.amazon.com/amazon-fashion/b/ref=sd_allcat_softline/143-0236513-9602213?ie=UTF8&node=7141123011',
+	]
 
 	def parse(self, response):
 		try:
 			products = response
+
+			sub_category_nodes_urls = response.xpath('//*[@id="leftNav"]//a[@class="a-link-normal s-ref-text-link"]/@href').extract()
+
+			for sub_category_nodes_url in sub_category_nodes_urls:
+				url = re.sub(r'([^ref]+ref=lp_)\d+(_ex[^rnid=]+rnid=)\d', '\13\23', sub_category_nodes_url)
+				yield response.follow(url)
 
 			if not response.meta.get('is_pagination_done', False):
 				last_page = response.xpath('//*[@class="pagnDisabled"]/text()').extract_first(default=0)
@@ -38,7 +46,7 @@ class ListingSpider(scrapy.Spider):
 			else:
 				data = '[%s]' % str(response.body).replace('&&&', ',').strip(',')
 				data = [item for item in json.loads(data) if item.has_key('centerBelowPlus')][0]['centerBelowPlus']['data']['value']
-				products = Selector(text=data)
+				products = Selector(text=data.replace('\\"', '"'))
 
 			for product in products.xpath('//*[contains(@id, "result_")]'):
 				il = ListingItemLoader(ListingItem(), product)
@@ -48,11 +56,14 @@ class ListingSpider(scrapy.Spider):
 				il.add_xpath('name', './/a[@title]/@title')
 				il.add_xpath('pdp_url', './/a[@href][@title]/@href')
 				il.add_xpath('image', './/img[@src]/@src')
+				il.add_xpath('images', './/img[@src]/@srcset')
 				il.add_xpath('promotion', './/*[contains(@id,"BESTSELLER")]/@id | .//*[starts-with(name(),"h")][contains(@class,"sponsored")]/text()')
 				il.add_xpath('price', './/span[@class= "a-offscreen"]/text() | .//span[@class="sx-price sx-price-large"]//text()')
-				il.add_xpath('ratings', './/span[@class = "a-icon-alt"]/text() | .//i[contains(@class,"a-icon-star-small")][not(contains(@class,"prime"))]/@class')
+				il.add_xpath('ratings', './/i[contains(@class, "a-icon-star")]/span[@class="a-icon-alt"]/text()')
 				il.add_xpath('is_prime', './/i[contains(@class,"a-icon-prime")]/@class')
 				il.add_xpath('reviews', './/a[contains(@href,"customerReviews")]//text() | .//span[contains(@class,"review")]//text()')
+				il.add_xpath('brand_name', './/span[@class="a-color-secondary s-overflow-ellipsis s-size-mild"]/text()')
+				il.add_xpath('brand_url', './/span[@class="a-color-secondary s-overflow-ellipsis s-size-mild"]/../self::*/@href')
 
 				yield il.load_item()
 		except Exception as e:

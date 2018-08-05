@@ -1,5 +1,5 @@
 from sqlalchemy.orm import sessionmaker
-from amazon.models import engine, Category, CategoryUrl, Listing
+from amazon.models import engine, Category, CategoryUrl, Listing, Brand
 
 
 class PostgresPipeline(object):

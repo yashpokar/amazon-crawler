@@ -5,3 +5,5 @@ venv/
 *.csv
 *.json
 *.db
+*.html
+*.egg-info

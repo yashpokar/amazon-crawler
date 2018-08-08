@@ -9,5 +9,6 @@ setup(
         'scrapy',
         'SQLAlchemy',
         'psycopg2-binary',
+        'scrapyd',
     ]
 )

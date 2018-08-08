@@ -8,26 +8,29 @@ from amazon.items import ListingItem
 
 class ListingSpider(scrapy.Spider):
 	name = 'listing'
-	allowed_domains = ['www.amazon.com']
+
 	custom_settings = {
 		'ITEM_PIPELINES': {
 			'amazon.pipelines.ListingPipeline': 1,
+		},
+		'DOWNLOADER_MIDDLEWARES': {
+			# 'amazon.middlewares.ProxyMiddleware': 1
 		}
 	}
 
-	start_urls = [
-		'https://www.amazon.com/amazon-fashion/b/ref=sd_allcat_softline/143-0236513-9602213?ie=UTF8&node=7141123011',
-	]
+	def start_requests(self):
+		with open('urls.txt', 'r') as f:
+			urls = f.read().split('\n')
+
+			for url in urls:
+				if url:
+					yield scrapy.Request('https://www.amazon.com{}'.format(url))
 
 	def parse(self, response):
+		title = response.xpath('//title/text()').extract_first()
+
 		try:
 			products = response
-
-			sub_category_nodes_urls = response.xpath('//*[@id="leftNav"]//a[@class="a-link-normal s-ref-text-link"]/@href').extract()
-
-			for sub_category_nodes_url in sub_category_nodes_urls:
-				url = re.sub(r'([^ref]+ref=lp_)\d+(_ex[^rnid=]+rnid=)\d', '\13\23', sub_category_nodes_url)
-				yield response.follow(url)
 
 			if not response.meta.get('is_pagination_done', False):
 				last_page = response.xpath('//*[@class="pagnDisabled"]/text()').extract_first(default=0)

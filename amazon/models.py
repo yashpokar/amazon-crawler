@@ -3,7 +3,7 @@ from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateT
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-engine = create_engine('sqlite:///amazon.db', echo=True)
+engine = create_engine('postgres://postgres:1@Yashpokar@127.0.0.1:5432/scrapy', echo=True)
 Base = declarative_base()
 
 
@@ -51,7 +51,7 @@ class Listing(Base):
 	asin = Column(String(10), nullable=False)
 	name = Column(String(255), nullable=False)
 	pdp_url = Column(String(2083), nullable=False)
-	image = Column(String(2083), nullable=False)
+	image = Column(String(2083))
 	price = Column(String(50), nullable=False)
 	images = Column(ARRAY(String))
 	promotion = Column(String)

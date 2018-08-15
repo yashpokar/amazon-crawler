@@ -1,6 +1,5 @@
 import re
 import scrapy
-import json
 from scrapy.selector import Selector
 from amazon.loaders import ListingItemLoader
 from amazon.items import ListingItem

@@ -23,7 +23,8 @@ class ListingSpider(scrapy.Spider):
 
 			for url in urls:
 				if url:
-					yield scrapy.Request('https://www.amazon.com{}'.format(url))
+					url = self.removeUnnecessary('https://www.amazon.com{}'.format(url))
+					yield scrapy.Request(url)
 
 	def parse(self, response):
 		title = response.xpath('//title/text()').extract_first()
@@ -44,7 +45,7 @@ class ListingSpider(scrapy.Spider):
 						next_page = next_page\
 							.replace('/s/', base_url)\
 							.replace('/gp/', base_url)
-						yield response.follow(next_page, meta={ 'is_pagination_done': True })
+						yield response.follow(self.removeUnnecessary(next_page), meta={ 'is_pagination_done': True })
 			else:
 				products = re.findall(r'&&&\n{\s*\n*[^"]*"centerBelowPlus" : {\n*.+\n*\n*\s*.*\n*\s*.+\n*\n*[^"value"]+"value" : (.+)"', response.body)[0]
 				products = Selector(text=products.replace('\\"', '"'))
@@ -69,3 +70,6 @@ class ListingSpider(scrapy.Spider):
 				yield il.load_item()
 		except Exception as e:
 			self.logger.error(e)
+
+	def removeUnnecessary(self, url):
+		return re.sub(r'&qid=\d+', '', url)

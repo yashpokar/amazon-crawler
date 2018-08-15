@@ -11,7 +11,7 @@ class ListingSpider(scrapy.Spider):
 
 	custom_settings = {
 		'ITEM_PIPELINES': {
-			'amazon.pipelines.ListingPipeline': 1,
+			# 'amazon.pipelines.ListingPipeline': 1,
 		},
 		'DOWNLOADER_MIDDLEWARES': {
 			# 'amazon.middlewares.ProxyMiddleware': 1
@@ -47,9 +47,8 @@ class ListingSpider(scrapy.Spider):
 							.replace('/gp/', base_url)
 						yield response.follow(next_page, meta={ 'is_pagination_done': True })
 			else:
-				data = '[%s]' % str(response.body).replace('&&&', ',').strip(',')
-				data = [item for item in json.loads(data) if item.has_key('centerBelowPlus')][0]['centerBelowPlus']['data']['value']
-				products = Selector(text=data.replace('\\"', '"'))
+				products = re.findall(r'&&&\n{\s*\n*[^"]*"centerBelowPlus" : {\n*.+\n*\n*\s*.*\n*\s*.+\n*\n*[^"value"]+"value" : (.+)"', response.body)[0]
+				products = Selector(text=products.replace('\\"', '"'))
 
 			for product in products.xpath('//*[contains(@id, "result_")]'):
 				il = ListingItemLoader(ListingItem(), product)

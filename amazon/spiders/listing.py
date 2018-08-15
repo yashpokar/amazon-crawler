@@ -59,7 +59,7 @@ class ListingSpider(scrapy.Spider):
 				il.add_xpath('pdp_url', './/a[@href][@title]/@href')
 				il.add_xpath('image', './/img[@src]/@src')
 				il.add_xpath('images', './/img[@src]/@srcset')
-				il.add_xpath('promotion', './/*[contains(@id,"BESTSELLER")]/@id | .//*[starts-with(name(),"h")][contains(@class,"sponsored")]/text()')
+				il.add_xpath('promotion', './/i[contains(@class, "a-icon-addon")][contains(@class, "aok-align-bottom")]/text() | .//i[contains(@class, "a-icon-addon")][contains(@class, "pantry-promo-badge-orange")]/text()')
 				il.add_xpath('price', './/span[@class= "a-offscreen"]/text() | .//span[@class="sx-price sx-price-large"]//text()')
 				il.add_xpath('ratings', './/i[contains(@class, "a-icon-star")]/span[@class="a-icon-alt"]/text()')
 				il.add_xpath('is_prime', './/i[contains(@class,"a-icon-prime")]/@class')

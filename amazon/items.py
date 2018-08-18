@@ -18,6 +18,8 @@ class ListingItem(Item):
     reviews = scrapy.Field()
     brand_name = scrapy.Field()
     brand_url = scrapy.Field()
+    suggested_price = scrapy.Field()
+    best_seller = scrapy.Field()
 
 
 class Review(Item):

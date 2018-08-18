@@ -1,7 +1,7 @@
 from scrapy.loader import ItemLoader
 from scrapy.loader.processors import TakeFirst, MapCompose, Join
 from w3lib.html import remove_tags
-from amazon.processors import filter_price_in, filter_price_out
+from amazon.processors import filter_price_in
 
 
 class DefaultItemLoader(ItemLoader):
@@ -13,7 +13,6 @@ class ListingItemLoader(DefaultItemLoader):
 	is_prime_in = MapCompose(bool)
 
 	price_in = filter_price_in
-	price_out = filter_price_out
 
 	images_in = MapCompose(lambda imgs: [img.split(' ')[0] for img in imgs.split(', ')])
 	images_out = MapCompose(unicode.strip)

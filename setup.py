@@ -10,5 +10,6 @@ setup(
         'SQLAlchemy',
         'psycopg2-binary',
         'scrapyd',
+        'pymongo',
     ]
 )

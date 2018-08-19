@@ -54,10 +54,8 @@ class PdpSpider(scrapy.Spider):
 			gift_wrap_available = response.xpath('//*[@id="merchant-info"]//*[contains(text(), "Gift-wrap available")]').extract_first(default='')
 
 			yield {
-				'brand': {
-					'name': brand_name,
-					'url': brand_url,
-				},
+				'brand_name': brand_name,
+				'brand_url': brand_url,
 				'name': name,
 				'price': price,
 				'bullet_points': bullet_points,
@@ -71,6 +69,11 @@ class PdpSpider(scrapy.Spider):
 				'fbc_url': fbc_url,
 				'fbc_name': fbc_name,
 				'gift_wrap_available': gift_wrap_available,
+				'available': available,
+				'seller_id': seller_id,
+				'seller_name': seller_name,
+				'seller_url': seller_url,
+				'rsid': rsid,
 			}
 		except Exception as e:
 			self.logger.error(e)

@@ -9,26 +9,19 @@ class ListingSpider(scrapy.Spider):
 	name = 'listing'
 
 	custom_settings = {
-		'JOBDIR': 'crawls/listing-clothing-1',
 		'ITEM_PIPELINES': {
-			# 'amazon.pipelines.MongoPipeline': 200,
-			# 'amazon.pipelines.ListingPipeline': 1,
-		},
-		'DOWNLOADER_MIDDLEWARES': {
-			# 'amazon.middlewares.ProxyMiddleware': 1
+			'amazon.pipelines.ListingPipeline': 1,
 		}
 	}
 
-	start_urls = ['https://www.amazon.com/s/ref=lp_1044886_pg_2/145-5468887-4155605?rh=n%3A7141123011%2Cn%3A7147440011%2Cn%3A1040660%2Cn%3A1044886&page=44&ie=UTF8']
+	def start_requests(self):
+		with open('urls.txt', 'r') as f:
+			urls = f.read().split('\n')
 
-	# def start_requests(self):
-	# 	with open('urls.txt', 'r') as f:
-	# 		urls = f.read().split('\n')
-
-	# 		for url in urls:
-	# 			if url:
-	# 				url = self.removeUnnecessary('https://www.amazon.com{}'.format(url))
-	# 				yield scrapy.Request(url)
+			for url in urls:
+				if url:
+					url = self.removeUnnecessary('https://www.amazon.com{}'.format(url))
+					yield scrapy.Request(url)
 
 	def parse(self, response):
 		title = response.xpath('//title/text()').extract_first()
@@ -49,7 +42,7 @@ class ListingSpider(scrapy.Spider):
 						next_page = next_page\
 							.replace('/s/', base_url)\
 							.replace('/gp/', base_url)
-						# yield response.follow(self.removeUnnecessary(next_page), meta={ 'is_pagination_done': True })
+						yield response.follow(self.removeUnnecessary(next_page), meta={ 'is_pagination_done': True })
 			else:
 				products = re.findall(r'&&&\n{\s*\n*[^"]*"centerBelowPlus" : {\n*.+\n*\n*\s*.*\n*\s*.+\n*\n*[^"value"]+"value" : (.+)"', response.body)[0]
 				products = Selector(text=products.replace('\\"', '"'))

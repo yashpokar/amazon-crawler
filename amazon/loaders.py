@@ -3,9 +3,12 @@ from scrapy.loader.processors import TakeFirst, MapCompose, Join
 from w3lib.html import remove_tags
 from amazon.processors import filter_price_in
 
+def strip(value):
+	return value
+
 
 class DefaultItemLoader(ItemLoader):
-	default_in_processor = MapCompose(remove_tags, unicode.strip)
+	default_in_processor = MapCompose(remove_tags, strip)
 	default_output_processor = TakeFirst()
 
 
@@ -15,7 +18,7 @@ class ListingItemLoader(DefaultItemLoader):
 	price_in = filter_price_in
 
 	images_in = MapCompose(lambda imgs: [img.split(' ')[0] for img in imgs.split(', ')])
-	images_out = MapCompose(unicode.strip)
+	images_out = MapCompose(strip)
 
 	# TODO :: Not tested
 		# Test it and also improve xpath
@@ -25,3 +28,4 @@ class ListingItemLoader(DefaultItemLoader):
 
 class ReviewItemLoader(DefaultItemLoader):
 	date_in = MapCompose(lambda x: x[3:] if len(x) >= 3 else x)
+

@@ -6,7 +6,6 @@ from amazon.items import Review
 
 class ReviewsSpider(scrapy.Spider):
 	name = 'reviews'
-	allowed_domains = ['www.amazon.com']
 
 	def start_requests(self):
 		return [scrapy.FormRequest('http://www.amazon.com/hz/reviews-render/ajax/reviews/get/ref=cm_cr_othr_d_paging_btm_next_2/',

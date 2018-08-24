@@ -1,8 +1,12 @@
 import re
 import scrapy
+import json
 from scrapy.selector import Selector
 from amazon.loaders import ListingItemLoader
 from amazon.items import ListingItem
+from scrapy.spidermiddlewares.httperror import HttpError
+from twisted.internet.error import DNSLookupError
+from twisted.internet.error import TimeoutError, TCPTimedOutError
 
 
 class ListingSpider(scrapy.Spider):
@@ -21,7 +25,7 @@ class ListingSpider(scrapy.Spider):
 			for url in urls:
 				if url:
 					url = self.removeUnnecessary('https://www.amazon.com{}'.format(url))
-					yield scrapy.Request(url)
+					yield scrapy.Request(url, callback=self.parse, errback=self.errback_httpbin)
 
 	def parse(self, response):
 		title = response.xpath('//title/text()').extract_first()
@@ -43,11 +47,17 @@ class ListingSpider(scrapy.Spider):
 							.replace('/s/', base_url)\
 							.replace('/gp/', base_url)
 						yield response.follow(self.removeUnnecessary(next_page), meta={ 'is_pagination_done': True })
-			else:
-				products = re.findall(r'&&&\n{\s*\n*[^"]*"centerBelowPlus" : {\n*.+\n*\n*\s*.*\n*\s*.+\n*\n*[^"value"]+"value" : (.+)"', response.body)[0]
-				products = Selector(text=products.replace('\\"', '"'))
+			else:	
+				data = '[%s]' % str(response.body).replace('&&&', ',').strip(',')
+				data = [item for item in json.loads(data) if item.has_key('centerBelowPlus')][0]['centerBelowPlus']['data']['value']
+				products = Selector(text=data)
+			
+			products = products.xpath('//*[contains(@id, "result_")]')
 
-			for product in products.xpath('//*[contains(@id, "result_")]'):
+			if len(products) != 48:
+				self.logger.info('got only %s products from page %s' % (len(products), response.url))
+
+			for product in products:
 				il = ListingItemLoader(ListingItem(), product)
 
 				il.add_value('current_url', response.url)
@@ -74,3 +84,25 @@ class ListingSpider(scrapy.Spider):
 
 	def removeUnnecessary(self, url):
 		return re.sub(r'&qid=\d+', '', url)
+
+	def errback_httpbin(self, failure):
+		# log all failures
+		self.logger.error(repr(failure))
+
+		# in case you want to do something special for some errors,
+		# you may need the failure's type:
+
+		if failure.check(HttpError):
+			# these exceptions come from HttpError spider middleware
+			# you can get the non-200 response
+			response = failure.value.response
+			self.logger.error('HttpError on %s', response.url)
+
+		elif failure.check(DNSLookupError):
+			# this is the original request
+			request = failure.request
+			self.logger.error('DNSLookupError on %s', request.url)
+
+		elif failure.check(TimeoutError, TCPTimedOutError):
+			request = failure.request
+			self.logger.error('TimeoutError on %s', request.url)

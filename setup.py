@@ -11,5 +11,6 @@ setup(
         'psycopg2-binary',
         'scrapyd',
         'pymongo',
+        'scrapy-rotating-proxies',
     ]
 )

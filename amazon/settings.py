@@ -33,7 +33,7 @@ CONCURRENT_REQUESTS = 100
 #CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-#COOKIES_ENABLED = False
+COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
@@ -52,9 +52,10 @@ CONCURRENT_REQUESTS = 100
 
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'amazon.middlewares.AmazonDownloaderMiddleware': 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+	'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
+    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
+}
 
 # Enable or disable extensions
 # See https://doc.scrapy.org/en/latest/topics/extensions.html
@@ -91,4 +92,11 @@ CONCURRENT_REQUESTS = 100
 
 # DOWNLOAD_FAIL_ON_DATALOSS = False
 
-LOG_LEVEL = 'INFO'
+# LOG_LEVEL = 'INFO'
+
+ROTATING_PROXY_LIST = [
+	'5.189.162.175:3128',
+	'167.99.197.73:8080',
+	'205.202.41.16:8083',
+	'163.172.173.187:3000',
+]
